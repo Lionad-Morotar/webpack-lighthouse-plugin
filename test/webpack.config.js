@@ -20,40 +20,40 @@ const WebpackLighthousePlugin = require('../src/webpack-lighthouse-plugin');
 const Fetch = require('fetch.io')
 
 module.exports = function () {
-    return new Promise(async resolve => {
-        let globalCookie = ''
-        const fetch = new Fetch({
-            afterResponse(res) {
-                globalCookie = res.headers.get('set-cookie')
-            }
-        })
-        await fetch.get('http://bax.baixing.cn/bax/user/login/local?user_id=3').query().text()
-
-        const config = {
-            entry: './sample.js',
-            output: {
-                filename: 'test.js'
-            },
-            plugins: [
-                new WebpackLighthousePlugin({
-                    url: 'http://localhost:9000/main-lighthouse',
-                    perf: true,
-                    // saveAssets: true,
-                    // saveArtifacts: true,
-                    chromeFlags: [
-                        '--start-fullscreen',
-                    ],
-                    throttling: {
-                        requestLatencyMs: 100,
-                        downloadThroughputKbps: 50 * 1024
-                    },
-                    extraHeaders: {
-                        Cookie: globalCookie
-                    }
-                })
-            ],
-        }
-
-        resolve(config)
+  return new Promise(async resolve => {
+    let globalCookie = ''
+    const fetch = new Fetch({
+      afterResponse(res) {
+        globalCookie = res.headers.get('set-cookie')
+      }
     })
+    await fetch.get('http://bax.baixing.cn/bax/user/login/local?user_id=3').query().text()
+
+    const config = {
+      entry: './sample.js',
+      output: {
+        filename: 'test.js'
+      },
+      plugins: [
+        new WebpackLighthousePlugin({
+          url: 'http://localhost:9000/main-lighthouse',
+          perf: true,
+          // saveAssets: true,
+          // saveArtifacts: true,
+          chromeFlags: [
+            '--start-fullscreen',
+          ],
+          throttling: {
+            requestLatencyMs: 100,
+            downloadThroughputKbps: 50 * 1024
+          },
+          extraHeaders: {
+            Cookie: globalCookie
+          }
+        })
+      ],
+    }
+
+    resolve(config)
+  })
 }
