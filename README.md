@@ -4,6 +4,22 @@ This plugin allows you to run  from a Webpack build.
 
 在 Webpack 打包结束后自动运行 [Lighthouse](https://github.com/googlechrome/lighthouse) 以评估网站的性能和用户体验。
 
+![](./assets/2021-01-07-15-21-00.png)
+
 ## 旧版本文档
 
 旧版本文档讨论了基础示例和API，见：https://github.com/addyosmani/webpack-lighthouse-plugin。
+
+## 新增功能
+
+修复了部分问题。此外，可通过配置项传入更多 Lighthouse 以及 Chrome 启动时参数。
+
+相关文档：
+
+* [Lighthouse@Github](https://github.com/GoogleChrome/lighthouse)
+* [AllChromeFlags](https://peter.sh/experiments/chromium-command-line-switches)
+
+## 评估模式
+
+* 加密协议：HTTP、HTTPS
+* 缓存内容：无缓存刷新（硬刷新）、完整缓存后刷新（软刷新）
