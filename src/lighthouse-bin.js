@@ -20,6 +20,7 @@ const _ERROR_EXIT_CODE = 130;
 const _RUNTIME_ERROR_CODE = 1;
 
 const path = require('path');
+const open = require('open');
 const Printer = require('lighthouse/lighthouse-cli/printer');
 // const assetSaver = require('lighthouse/lighthouse-core/lib/asset-saver.js');
 const getFilenamePrefix = require('lighthouse/lighthouse-core/lib/file-namer').getFilenamePrefix;
@@ -60,12 +61,12 @@ function saveResults(results, artifacts, flags) {
       return Printer.write(results.report, flags.output, outputPath).then(results => {
         if (flags.output === Printer.OutputMode[Printer.OutputMode.html] ||
           flags.output === Printer.OutputMode[Printer.OutputMode.domhtml]) {
-          if (flags.view) {
-            opn(outputPath, { wait: false });
+          if (flags.open) {
+            open(outputPath, { wait: false });
           } else {
             log.log(
               'CLI',
-              'Protip: Run lighthouse with `--view` to immediately open the HTML report in your browser');
+              'Protip: Run lighthouse with `--open` to immediately open the HTML report in your browser');
           }
         }
 
@@ -120,6 +121,7 @@ function lighthouseRun(addresses, config, lighthouseFlags, chrome) {
     return chrome;
   }
   console.log(`[URL & FLAGS]: `, address, lighthouseFlags)
+
   return lighthouse(address, lighthouseFlags)
     .then((results) => {
       const artifacts = results.artifacts;
@@ -154,6 +156,7 @@ function handleError(err) {
 }
 function run(addresses, config, lighthouseFlags) {
   console.log('lighthouseFlags : ', lighthouseFlags)
+
   if (lighthouseFlags.skipAutolaunch) {
     return lighthouseRun(addresses, config, lighthouseFlags).catch(handleError);
   }

@@ -20,6 +20,7 @@ let configPath;
 
 const defaultOptions = {
   url: '',
+  open: false,
   perf: false,
   disableDeviceEmulation: true,
   disableCPUThrottling: true,

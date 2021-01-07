@@ -36,17 +36,15 @@ module.exports = function () {
       },
       plugins: [
         new WebpackLighthousePlugin({
-          url: 'http://localhost:9000/main-lighthouse',
+          // url: 'http://localhost:9000/main-lighthouse',
+          url: 'https://www.baidu.com',
+          open: true,
           perf: true,
           // saveAssets: true,
           // saveArtifacts: true,
           chromeFlags: [
-            '--start-fullscreen',
+            // '--start-fullscreen'
           ],
-          throttling: {
-            requestLatencyMs: 100,
-            downloadThroughputKbps: 50 * 1024
-          },
           extraHeaders: {
             Cookie: globalCookie
           }
