@@ -47,14 +47,14 @@ class WebpackLighthousePlugin {
 
   apply(compiler) {
     compiler.hooks.afterEmit.tapAsync('lighthousePlugin', (compilation, callback) => {
-      if (this.options.url.length) {
-        const flags = {
-          ...this.options
-        };
+      const url = this.options.url
+      if (url) {
+        const flags = { ...this.options }
+        const urls = url instanceof Array ? url : [url]
         if (configPath) {
-          lighthouse([this.options.url], require(configPath), flags);
+          lighthouse(urls, require(configPath), flags);
         } else {
-          lighthouse([this.options.url], configPath, flags);
+          lighthouse(urls, configPath, flags);
         }
       }
       callback();

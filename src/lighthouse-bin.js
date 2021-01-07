@@ -111,26 +111,30 @@ function launchChromeAndRun(addresses, config, opts) {
     .then(_ => Promise.resolve());
 }
 exports.launchChromeAndRun = launchChromeAndRun;
-function lighthouseRun(addresses, config, lighthouseFlags, chrome) {
+function lighthouseRun(addresses = [], config, lighthouseFlags, chrome) {
   // Enable a programatic consumer to pass custom flags otherwise default to CLI.
   log.setLevel(lighthouseFlags.logLevel);
   lighthouseFlags.port = chrome.port;
-  // Process URLs once at a time
-  const address = addresses.shift();
-  if (!address) {
-    return chrome;
-  }
-  console.log(`[URL & FLAGS]: `, address, lighthouseFlags)
 
-  return lighthouse(address, lighthouseFlags)
-    .then((results) => {
-      const artifacts = results.artifacts;
-      delete results.artifacts;
-      return saveResults(results, artifacts, lighthouseFlags);
-    })
-    .then((results) => {
-      return lighthouseRun(addresses, config, lighthouseFlags, chrome);
-    }).then(result => result);
+  console.log(`[LIGHTHOUSE FLAGS]: `, lighthouseFlags)
+
+  // Process URLs once at a time
+  return new Promise(async (resolve, reject) => {
+    if (addresses.length === 0) resolve(chrome)
+
+    let address = null
+    while (address = addresses.shift()) {
+      await lighthouse(address, lighthouseFlags)
+        .then((results) => {
+          const artifacts = results.artifacts;
+          delete results.artifacts;
+          return saveResults(results, artifacts, lighthouseFlags);
+        })
+        .then(result => result)
+    }
+
+    resolve(chrome)
+  })
 
 }
 function showConnectionError() {
@@ -149,8 +153,7 @@ function showRuntimeError(err) {
 function handleError(err) {
   if (err.code === 'ECONNREFUSED') {
     showConnectionError();
-  }
-  else {
+  } else {
     showRuntimeError(err);
   }
 }
@@ -166,9 +169,12 @@ function run(addresses, config, lighthouseFlags) {
       process.on(_SIGINT, () => reject(_SIGINT));
     });
     return Promise
-      .race([launchChromeAndRun(addresses, config, {
-        lighthouseFlags: lighthouseFlags
-      }), isSigint])
+    .race([
+        isSigint,
+        launchChromeAndRun(addresses, config, {
+          lighthouseFlags
+        })
+      ])
       .catch(maybeSigint => {
         if (maybeSigint === _SIGINT) {
           return cleanup
@@ -176,7 +182,9 @@ function run(addresses, config, lighthouseFlags) {
             .catch(err => {
               console.error(err);
               console.error(err.stack);
-            }).then(() => process.exit(_ERROR_EXIT_CODE));
+            }).then(() =>
+              process.exit(_ERROR_EXIT_CODE)
+            );
         }
         return handleError(maybeSigint);
       });

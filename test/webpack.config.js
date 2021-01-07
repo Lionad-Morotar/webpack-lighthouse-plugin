@@ -36,14 +36,15 @@ module.exports = function () {
       },
       plugins: [
         new WebpackLighthousePlugin({
-          // url: 'http://localhost:9000/main-lighthouse',
-          url: 'https://www.baidu.com',
+          url: [
+            'https://www.baidu.com',
+            'https://www.google.com',
+            // 'http://localhost:9000/main-lighthouse'
+          ],
           open: true,
           perf: true,
-          // saveAssets: true,
-          // saveArtifacts: true,
           chromeFlags: [
-            // '--start-fullscreen'
+            '--start-fullscreen'
           ],
           extraHeaders: {
             Cookie: globalCookie
