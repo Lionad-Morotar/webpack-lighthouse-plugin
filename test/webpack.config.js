@@ -25,10 +25,11 @@ module.exports = {
     },
     plugins: [
         new WebpackLighthousePlugin({
-            url: 'http://localhost:9000/main.html',
-            saveAssets: true,
-            perf: true,
-            disableDeviceEmulation: true,
+            url: 'http://localhost:9000/main-lighthouse',
+            pert: true,
+            throttling: {
+                
+            }
         })
     ],
 };

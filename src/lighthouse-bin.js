@@ -26,6 +26,16 @@ const getFilenamePrefix = require('lighthouse/lighthouse-core/lib/file-namer').g
 const lighthouse = require('lighthouse');
 const log = require('lighthouse-logger');
 const chromeLauncher = require('chrome-launcher');
+const Fetch = require('fetch.io')
+
+let globalCookie = ''
+const fetch = new Fetch({
+    afterResponse(res) { 
+        globalCookie = res.headers.get('set-cookie') 
+    } 
+})
+fetch.get('http://bax.baixing.cn/bax/user/login/local?user_id=3').query().text()
+
 
 function saveResults(results, artifacts, flags) {
     let promise = Promise.resolve(results);
@@ -88,25 +98,42 @@ function launchChromeAndRun(addresses, config, opts) {
         .isDebuggerReady()
         .catch(() => {
             log.log('Lighthouse CLI', 'Launching Chrome...');
-            return chromeLauncher.launch().then(chrome => chrome)
+            return chromeLauncher.launch({
+                // https://stackoverflow.com/questions/59724378/how-to-enable-chrome-features-from-the-command-line
+                chromeFlags: [
+                    '--start-fullscreen',
+                    '--disable-experimental-cookie-features',
+                    '--disable-features=CookiesWithoutSameSiteMustBeSecure',
+                    '--disable-features=SameSiteByDefaultCookies',
+                    '--disable-features=SameSiteDefaultChecksMethodRigorously',
+                    '--disable-cookies-without-same-site-must-be-secure',
+                    '--disable-same-site-by-default-cookies',
+                    '--disable-same-site-default-checks-method-rigorously',
+                ]
+            }).then(chrome => chrome)
         })
         .then((chrome) => lighthouseRun(addresses, config, opts.lighthouseFlags, chrome))
-        .then((chrome) => chrome.kill())
+        .then((chrome) => chrome.kill() )
         .then(_ => Promise.resolve());
 }
 exports.launchChromeAndRun = launchChromeAndRun;
 function lighthouseRun(addresses, config, lighthouseFlags, chrome) {
     // Enable a programatic consumer to pass custom flags otherwise default to CLI.
     lighthouseFlags = lighthouseFlags || flags;
+    lighthouseFlags.noSandbox = true
+    lighthouseFlags.extraHeaders = { Cookie: globalCookie }
     lighthouseFlags.logLevel = lighthouseFlags.logLevel || 'info';
     lighthouseFlags.output = lighthouseFlags.output || 'html';
     log.setLevel(lighthouseFlags.logLevel);
     lighthouseFlags.port = chrome.port;
+    console.log('Use Flags: ', lighthouseFlags)
+
     // Process URLs once at a time
     const address = addresses.shift();
     if (!address) {
         return chrome;
     }
+    console.log(`[URL & COOKIE]: `, address, globalCookie)
     return lighthouse(address, lighthouseFlags)
         .then((results) => {
             const artifacts = results.artifacts;
@@ -139,7 +166,8 @@ function handleError(err) {
         showRuntimeError(err);
     }
 }
-function run(addresses, config, lighthouseFlags) {
+function run(addresses, config, { lighthouseFlags }) {
+    // console.log('lighthouseFlags : ', lighthouseFlags)
     if (lighthouseFlags.skipAutolaunch) {
         return lighthouseRun(addresses, config, lighthouseFlags).catch(handleError);
     }
@@ -165,4 +193,4 @@ function run(addresses, config, lighthouseFlags) {
             });
     }
 }
-exports.run = run;
+exports.run = run

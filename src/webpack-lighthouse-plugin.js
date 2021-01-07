@@ -21,32 +21,14 @@ let configPath;
 const defaultOptions = {
   url: '',
   perf: false,
-  disableDeviceEmulation: false,
+  disableDeviceEmulation: true,
   disableCPUThrottling: true,
-  disableNetworkThrottling: false,
+  disableNetworkThrottling: true,
   saveAssets: false,
   saveArtifacts: false
 };
 
 function validateInput(options) {
-  if (typeof options.disableDeviceEmulation === 'string') {
-    options.disableDeviceEmulation = String(options.disableDeviceEmulation);
-  }
-  if (typeof options.disableCPUThrottling === 'string') {
-    options.disableCPUThrottling = String(options.disableCPUThrottling);
-  }
-  if (typeof options.disableNetworkThrottling === 'string') {
-    options.disableNetworkThrottling = String(options.disableNetworkThrottling);
-  }
-  if (typeof options.saveAssets === 'string') {
-    options.saveAssets = String(options.saveAssets);
-  }
-  if (typeof options.saveArtifacts === 'string') {
-    options.saveArtifacts = String(options.saveArtifacts);
-  }
-  if (typeof options.perf === 'string') {
-    options.perf = String(options.perf);
-  }
   if (options.perf === true) {
     configPath = 'lighthouse/lighthouse-core/config/perf-config.js';
   }
@@ -65,6 +47,7 @@ function mergeOptions(options, defaults) {
 class WebpackLighthousePlugin {
   constructor(options) {
     this.options = validateInput(mergeOptions(options, defaultOptions));
+    console.log('use-opts:', options)
   }
 
   apply(compiler) {
