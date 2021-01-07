@@ -19,13 +19,13 @@ const lighthouse = require('./lighthouse-bin.js').run;
 let configPath;
 
 const defaultOptions = {
-    url: '',
-    perf: false,
-    disableDeviceEmulation: false,
-    disableCPUThrottling: true,
-    disableNetworkThrottling: false,
-    saveAssets: false,
-    saveArtifacts: false
+  url: '',
+  perf: false,
+  disableDeviceEmulation: false,
+  disableCPUThrottling: true,
+  disableNetworkThrottling: false,
+  saveAssets: false,
+  saveArtifacts: false
 };
 
 function validateInput(options) {
@@ -73,10 +73,10 @@ class WebpackLighthousePlugin {
         const flags = {
           lighthouseFlags: this.options
         };
-        if(configPath) {
-           lighthouse([this.options.url], require(configPath), flags);
+        if (configPath) {
+          lighthouse([this.options.url], require(configPath), flags);
         } else {
-           lighthouse([this.options.url], configPath, flags);
+          lighthouse([this.options.url], configPath, flags);
         }
       }
       callback();

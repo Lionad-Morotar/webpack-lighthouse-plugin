@@ -38,40 +38,40 @@ function saveResults(results, artifacts, flags) {
         flags.outputPath.replace(/\.\w{2,4}$/, '');
     const resolvedPath = path.resolve(cwd, configuredPath);
     if (flags.saveArtifacts) {
-      assetSaver.saveArtifacts(artifacts, resolvedPath);
+        assetSaver.saveArtifacts(artifacts, resolvedPath);
     }
-  
+
     if (flags.saveAssets) {
-      promise = promise.then(_ => assetSaver.saveAssets(results.artifacts, results.audits, resolvedPath));
+        promise = promise.then(_ => assetSaver.saveAssets(results.artifacts, results.audits, resolvedPath));
     }
-  
+
     const typeToExtension = (type) => type === 'domhtml' ? 'html' : type;
     return promise.then(_ => {
-      if (Array.isArray(flags.output)) {
-        return flags.output.reduce((innerPromise, outputType) => {
-          const outputPath = `${resolvedPath}.report.${typeToExtension(outputType)}`;
-          return innerPromise.then((_) => Printer.write(results, outputType, outputPath));
-        }, Promise.resolve(results));
-      } else {
-        const outputPath =
-            flags.outputPath || `${resolvedPath}.report.${typeToExtension(flags.output)}`;
-        return Printer.write(results.report, flags.output, outputPath).then(results => {
-          if (flags.output === Printer.OutputMode[Printer.OutputMode.html] ||
-              flags.output === Printer.OutputMode[Printer.OutputMode.domhtml]) {
-            if (flags.view) {
-              opn(outputPath, {wait: false});
-            } else {
-              log.log(
-                  'CLI',
-                  'Protip: Run lighthouse with `--view` to immediately open the HTML report in your browser');
-            }
-          }
-  
-          return results;
-        });
-      }
+        if (Array.isArray(flags.output)) {
+            return flags.output.reduce((innerPromise, outputType) => {
+                const outputPath = `${resolvedPath}.report.${typeToExtension(outputType)}`;
+                return innerPromise.then((_) => Printer.write(results, outputType, outputPath));
+            }, Promise.resolve(results));
+        } else {
+            const outputPath =
+                flags.outputPath || `${resolvedPath}.report.${typeToExtension(flags.output)}`;
+            return Printer.write(results.report, flags.output, outputPath).then(results => {
+                if (flags.output === Printer.OutputMode[Printer.OutputMode.html] ||
+                    flags.output === Printer.OutputMode[Printer.OutputMode.domhtml]) {
+                    if (flags.view) {
+                        opn(outputPath, { wait: false });
+                    } else {
+                        log.log(
+                            'CLI',
+                            'Protip: Run lighthouse with `--view` to immediately open the HTML report in your browser');
+                    }
+                }
+
+                return results;
+            });
+        }
     });
-  }
+}
 
 const cleanup = {
     fns: [],
@@ -87,8 +87,8 @@ function launchChromeAndRun(addresses, config, opts) {
     return launcher
         .isDebuggerReady()
         .catch(() => {
-        log.log('Lighthouse CLI', 'Launching Chrome...');
-        return chromeLauncher.launch().then(chrome => chrome)
+            log.log('Lighthouse CLI', 'Launching Chrome...');
+            return chromeLauncher.launch().then(chrome => chrome)
         })
         .then((chrome) => lighthouseRun(addresses, config, opts.lighthouseFlags, chrome))
         .then((chrome) => chrome.kill())
@@ -108,14 +108,14 @@ function lighthouseRun(addresses, config, lighthouseFlags, chrome) {
         return chrome;
     }
     return lighthouse(address, lighthouseFlags)
-    .then((results) => {
-        const artifacts = results.artifacts;
-        delete results.artifacts;
-        return saveResults(results, artifacts, lighthouseFlags);
-    })
-    .then((results) => {
-        return lighthouseRun(addresses, config, lighthouseFlags, chrome);
-    }).then(result => result);
+        .then((results) => {
+            const artifacts = results.artifacts;
+            delete results.artifacts;
+            return saveResults(results, artifacts, lighthouseFlags);
+        })
+        .then((results) => {
+            return lighthouseRun(addresses, config, lighthouseFlags, chrome);
+        }).then(result => result);
 
 }
 function showConnectionError() {
@@ -153,16 +153,16 @@ function run(addresses, config, lighthouseFlags) {
                 lighthouseFlags: lighthouseFlags
             }), isSigint])
             .catch(maybeSigint => {
-            if (maybeSigint === _SIGINT) {
-                return cleanup
-                    .doCleanup()
-                    .catch(err => {
-                    console.error(err);
-                    console.error(err.stack);
-                }).then(() => process.exit(_ERROR_EXIT_CODE));
-            }
-            return handleError(maybeSigint);
-        });
+                if (maybeSigint === _SIGINT) {
+                    return cleanup
+                        .doCleanup()
+                        .catch(err => {
+                            console.error(err);
+                            console.error(err.stack);
+                        }).then(() => process.exit(_ERROR_EXIT_CODE));
+                }
+                return handleError(maybeSigint);
+            });
     }
 }
 exports.run = run;

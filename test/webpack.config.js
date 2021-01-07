@@ -25,9 +25,10 @@ module.exports = {
     },
     plugins: [
         new WebpackLighthousePlugin({
-            url: 'https://airhorner.com',
+            url: 'http://localhost:9000/main.html',
             saveAssets: true,
-            perf: true
+            perf: true,
+            disableDeviceEmulation: true,
         })
     ],
 };
