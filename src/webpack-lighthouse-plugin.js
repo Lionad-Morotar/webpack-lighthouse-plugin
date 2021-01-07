@@ -24,8 +24,11 @@ const defaultOptions = {
   disableDeviceEmulation: true,
   disableCPUThrottling: true,
   disableNetworkThrottling: true,
-  saveAssets: false,
-  saveArtifacts: false
+  outputPath: '',
+  // saveAssets: false,
+  // saveArtifacts: false,
+  logLevel: 'info',
+  output: 'html'
 };
 
 function validateInput(options) {
@@ -35,26 +38,17 @@ function validateInput(options) {
   return options;
 }
 
-function mergeOptions(options, defaults) {
-  for (let key in defaults) {
-    if (options.hasOwnProperty(key)) {
-      defaults[key] = options[key];
-    }
-  }
-  return defaults;
-}
-
 class WebpackLighthousePlugin {
   constructor(options) {
-    this.options = validateInput(mergeOptions(options, defaultOptions));
-    console.log('use-opts:', options)
+    this.options = validateInput(Object.assign({}, defaultOptions, options));
+    // console.log('use-opts:', this.options)
   }
 
   apply(compiler) {
     compiler.hooks.afterEmit.tapAsync('lighthousePlugin', (compilation, callback) => {
       if (this.options.url.length) {
         const flags = {
-          lighthouseFlags: this.options
+          ...this.options
         };
         if (configPath) {
           lighthouse([this.options.url], require(configPath), flags);
