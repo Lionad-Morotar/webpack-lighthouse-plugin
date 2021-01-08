@@ -18,15 +18,10 @@ module.exports = {
   output: 'html',
   maxWaitForFcp: 15000,
   maxWaitForLoad: 35000,
-  extends: 'lighthouse:default',
-  settings:
-  {
-    maxWaitForLoad: 35000,
-    emulatedFormFactor: 'desktop',
-    throttling:
-      { rttMs: 40, throughputKbps: 10240, cpuSlowdownMultiplier: 1 },
-    skipAudits: ['uses-http2']
-  },
+  maxWaitForLoad: 35000,
+  emulatedFormFactor: 'desktop',
+  throttling: { rttMs: 40, throughputKbps: 10240, cpuSlowdownMultiplier: 1 },
+  skipAudits: ['uses-http2'],
   audits:
     [{ path: 'metrics/first-contentful-paint', options: [Object] },
     { path: 'metrics/first-meaningful-paint', options: [Object] },
