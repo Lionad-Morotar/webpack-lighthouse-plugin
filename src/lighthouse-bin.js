@@ -32,48 +32,31 @@ const chromeLauncher = require('chrome-launcher');
 function saveResults(results, artifacts, flags) {
   let promise = Promise.resolve(results);
   const cwd = process.cwd();
-  // Use the output path as the prefix for all generated files.
-  // If no output path is set, generate a file prefix using the URL and date.
 
-  const configuredPath = !flags.outputPath || flags.outputPath === 'stdout' ?
-    getFilenamePrefix(results.lhr) :
-    flags.outputPath.replace(/\.\w{2,4}$/, '');
-  const resolvedPath = path.resolve(cwd, configuredPath);
+  const configuredPath = flags.outputFile || getFilenamePrefix(results.lhr)
+  const resolvedPath = path.join(cwd, configuredPath)
+
+  // console.log(resolvedPath)
 
   // if (flags.saveArtifacts) {
   //     assetSaver.saveArtifacts(artifacts, resolvedPath);
   // }
-
   // if (flags.saveAssets) {
   //     promise = promise.then(_ => assetSaver.saveAssets(results.artifacts, results.audits, resolvedPath));
   // }
 
   const typeToExtension = (type) => type === 'domhtml' ? 'html' : type;
   return promise.then(_ => {
-    if (Array.isArray(flags.output)) {
-      return flags.output.reduce((innerPromise, outputType) => {
-        const outputPath = `${resolvedPath}.report.${typeToExtension(outputType)}`;
-        return innerPromise.then((_) => Printer.write(results, outputType, outputPath));
-      }, Promise.resolve(results));
-    } else {
-      const outputPath =
-        flags.outputPath || `${resolvedPath}.report.${typeToExtension(flags.output)}`;
-      return Printer.write(results.report, flags.output, outputPath).then(results => {
-        if (flags.output === Printer.OutputMode[Printer.OutputMode.html] ||
-          flags.output === Printer.OutputMode[Printer.OutputMode.domhtml]) {
-          if (flags.open) {
-            open(outputPath, { wait: false });
-          } else {
-            log.log(
-              'CLI',
-              'Protip: Run lighthouse with `--open` to immediately open the HTML report in your browser');
-          }
-        }
-
-        return results;
-      });
-    }
-  });
+    const outputPath = flags.outputFile || `${resolvedPath}.report.${typeToExtension(flags.output)}`;
+    return Printer.write(results.report, flags.output, outputPath).then(results => {
+      if (flags.output === Printer.OutputMode[Printer.OutputMode.html]) {
+        flags.open
+          ? open(outputPath, { wait: false })
+          : log.log('CLI', 'Run lighthouse with `--open` to open in Browser.')
+      }
+      return results
+    })
+  })
 }
 
 const cleanup = {
@@ -111,12 +94,12 @@ function launchChromeAndRun(addresses, config, opts) {
     .then(_ => Promise.resolve());
 }
 exports.launchChromeAndRun = launchChromeAndRun;
-function lighthouseRun(addresses = [], config, lighthouseFlags, chrome) {
+function lighthouseRun(addresses = [], config, flags, chrome) {
   // Enable a programatic consumer to pass custom flags otherwise default to CLI.
-  log.setLevel(lighthouseFlags.logLevel);
-  lighthouseFlags.port = chrome.port;
+  log.setLevel(flags.logLevel);
+  flags.port = chrome.port;
 
-  console.log(`[LIGHTHOUSE FLAGS]: `, lighthouseFlags)
+  console.log(`[LIGHTHOUSE FLAGS]: `, flags)
 
   // Process URLs once at a time
   return new Promise(async (resolve, reject) => {
@@ -124,11 +107,11 @@ function lighthouseRun(addresses = [], config, lighthouseFlags, chrome) {
 
     let address = null
     while (address = addresses.shift()) {
-      await lighthouse(address, lighthouseFlags)
+      await lighthouse(address, flags)
         .then((results) => {
           const artifacts = results.artifacts;
           delete results.artifacts;
-          return saveResults(results, artifacts, lighthouseFlags);
+          return saveResults(results, artifacts, flags);
         })
         .then(result => result)
     }
@@ -158,7 +141,7 @@ function handleError(err) {
   }
 }
 function run(addresses, config, lighthouseFlags) {
-  console.log('lighthouseFlags : ', lighthouseFlags)
+  // console.log('lighthouseFlags : ', lighthouseFlags)
 
   if (lighthouseFlags.skipAutolaunch) {
     return lighthouseRun(addresses, config, lighthouseFlags).catch(handleError);

@@ -20,16 +20,24 @@ let configPath;
 
 const defaultOptions = {
   url: '',
+  onlyCategories: [
+    'performance',
+    'accessibility',
+    'best-practices',
+    'seo',
+    'progressive-web-app',
+  ],
+  skipAudits: [],
   open: false,
-  perf: false,
   disableDeviceEmulation: true,
   disableCPUThrottling: true,
   disableNetworkThrottling: true,
-  outputPath: '',
   // saveAssets: false,
   // saveArtifacts: false,
   logLevel: 'info',
-  output: 'html'
+  output: 'html',
+  maxWaitForFcp: 15 * 1000,
+  maxWaitForLoad: 35 * 1000,
 };
 
 function validateInput(options) {

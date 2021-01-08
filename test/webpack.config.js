@@ -18,6 +18,8 @@
 const webpack = require('webpack');
 const WebpackLighthousePlugin = require('../src/webpack-lighthouse-plugin');
 const Fetch = require('fetch.io')
+const lighthouseConfig = require('lighthouse/lighthouse-core/config/lr-desktop-config')
+const fixing = require('../src/get-lighthouse-config')
 
 module.exports = function () {
   return new Promise(async resolve => {
@@ -36,19 +38,18 @@ module.exports = function () {
       },
       plugins: [
         new WebpackLighthousePlugin({
+          ...fixing(lighthouseConfig),
           url: [
-            'https://www.baidu.com',
-            'https://www.google.com',
-            // 'http://localhost:9000/main-lighthouse'
+            // 'https://www.baidu.com',
+            'http://localhost:9000/main'
           ],
           open: true,
-          perf: true,
           chromeFlags: [
             '--start-fullscreen'
           ],
           extraHeaders: {
             Cookie: globalCookie
-          }
+          },
         })
       ],
     }
