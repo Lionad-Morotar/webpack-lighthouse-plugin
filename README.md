@@ -1,6 +1,6 @@
 # Webpack Lighthouse Plugin
 
-This plugin allows you to run  from a Webpack build.
+This plugin allows you to run Lighthouse from a Webpack build.
 
 在 Webpack 打包结束后自动运行 [Lighthouse](https://github.com/googlechrome/lighthouse) 以评估网站的性能和用户体验。
 
