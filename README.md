@@ -6,7 +6,7 @@ This plugin allows you to run Lighthouse from a Webpack build.
 
 ![](./assets/example.gif)
 
-## 代码示例 Example
+## 代码示例 API Example
 
 配置 webpack.config.js。
 
@@ -69,9 +69,57 @@ new WebpackLighthousePlugin({
 })
 ```
 
-完整的配置示例。
+## 使用方法 How to use
 
-Full API.
+1. Install Packages
+
+```
+npm install --save-dev chrome-launcher lighthouse lighthouse-logger open
+npm install --save-dev https://github.com/Lionad-Morotar/webpack-lighthouse-plugin
+```
+
+
+2. Configurate webpack.config.js
+
+```js
+// choose one to use
+const lighthouseConfig = require('lighthouse/lighthouse-core/config/lr-desktop-config')
+const lighthouseConfig = require('lighthouse/lighthouse-core/config/lr-mobile-config')
+const lighthouseConfig = require('lighthouse/lighthouse-core/config/mixed-content-config')
+const lighthouseConfig = require('perf-config.js')
+
+// fix config object that directly imported from lighthouse package
+const fixing = require('../src/get-lighthouse-config')
+
+module.exports = {
+  entry: './sample.js',
+  output: { filename: 'test.js' },
+  plugins: [
+    new WebpackLighthousePlugin({
+      ...fixing(lighthouseConfig),
+      url: [
+        // 'https://www.baidu.com',
+        'http://localhost:9000/main'
+      ],
+      open: true,
+      chromeFlags: [
+        '--start-fullscreen'
+      ],
+      extraHeaders: {
+        Cookie: globalCookie
+      },
+    })
+  ],
+}
+```
+
+## 测试 Run for test
+
+```
+npm run demo
+```
+
+## 完整配置示例 Full API Example
 
 ```js
 {
@@ -109,7 +157,7 @@ Full API.
 }
 ```
 
-## 相关文档
+## 相关文档 Related document
 
 * [Lighthouse Homepage](https://github.com/GoogleChrome/lighthouse)
 * [Lighthouse Configuration](https://github.com/GoogleChrome/lighthouse/blob/master/docs/configuration.md)
