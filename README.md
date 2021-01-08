@@ -4,7 +4,7 @@ This plugin allows you to run Lighthouse from a Webpack build.
 
 在 Webpack 打包结束后自动运行 [Lighthouse](https://github.com/googlechrome/lighthouse) 以评估网站的性能和用户体验。
 
-![](./assets/2021-01-07-18-21-36.png)
+<video src="./assets/example.mp4" controls autoplay loop preload />
 
 ## 旧版本文档
 
