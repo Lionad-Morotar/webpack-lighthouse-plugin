@@ -12,16 +12,12 @@ This plugin allows you to run Lighthouse from a Webpack build.
 
 ## 新增功能
 
-修复了部分问题。此外，可通过配置项传入完整的 Lighthouse 以及 Chrome 启动参数。
+修复了部分问题。此外，可通过传入完整的 Lighthouse 配置项以及 Chrome 启动参数。
+
+示例配置见：lighthouse-config.template.js
 
 相关文档：
 
 * [Lighthouse@Github](https://github.com/GoogleChrome/lighthouse)
 * [Lighthouse@API](https://github.com/GoogleChrome/lighthouse/blob/master/docs/configuration.md)
 * [AllChromeFlags](https://peter.sh/experiments/chromium-command-line-switches)
-
-## 评估模式
-
-* [机器类型](https://github.com/GoogleChrome/lighthouse/blob/master/docs/throttling.md#benchmarking-cpu-power)：高端PC（CPU 性能约等于 16" Macbook Pro）、中低端PC（CPU 性能约等于 Intel NUC i3）
-* 加密协议：HTTP、HTTPS
-* 缓存内容：无缓存刷新（硬刷新）、完整缓存后刷新（软刷新）
